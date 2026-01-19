@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "469777701278",
+    "project_id": "notefy-nahian",
+    "storage_bucket": "notefy-nahian.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:469777701278:android:a6f61871b12c3f09125e8f",
+        "android_client_info": {
+          "package_name": "wild.doms.notefy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDv8DqrygI7ZXLG5sDhaXstBf6rsOQXfoM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
