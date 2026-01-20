@@ -15,9 +15,11 @@ void main() {
       theme: ThemeData(primarySwatch: Colors.blue),
       home: const HomePage(),
       routes: {
+        // the place where routes are registered
         loginRoute: (context) => const LoginView(),
         registerRoute: (context) => const RegisterView(),
-        notesRoute: (context) => const NotesView()
+        notesRoute: (context) => const NotesView(),
+        verifyEmailRoute: (context) => const VerifyEmailView(),
       },
     ),
   );
@@ -82,7 +84,6 @@ class _NotesViewState extends State<NotesView> {
                       context,
                     ).pushNamedAndRemoveUntil(loginRoute, (_) => false);
                   }
-                  devtools.log(lg.toString());
                   break;
               }
             },

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
 
 import 'package:notefy/constants/routes.dart';
+import 'package:notefy/utilities/show_error_dialog.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -58,35 +59,26 @@ class _RegisterViewState extends State<RegisterView> {
                   email: email,
                   password: password,
                 );
+                await FirebaseAuth.instance.currentUser?.sendEmailVerification();
+                Navigator.of(context).pushNamed(verifyEmailRoute);
               } on FirebaseAuthException catch (e) {
-                String txt = 'An error occurred. Please try again.';
                 if (e.code == 'unknown') {
-                  txt =
-                      'Your password must be at least 8 characters long, including a number and a special character.';
+                  await showErrorDialog(
+                    context,
+                    'Your password must be at least 8 characters long, including a number and a special character.',
+                  );
                 } else if (e.code == 'email-already-in-use') {
-                  txt =
-                      'The email address is already in use by another account.';
+                  await showErrorDialog(
+                    context,
+                    'The email address is already in use by another account.',
+                  );
+                } else if (e.code == 'invalid-email') {
+                  await showErrorDialog(context, 'Invalid email address');
+                } else {
+                  await showErrorDialog(context, 'Error: ${e.code}');
                 }
-                return showDialog<void>(
-                  context: context,
-                  barrierDismissible: false, // user must tap button!
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text('Something\'s Wrong'),
-                      content: SingleChildScrollView(
-                        child: ListBody(children: <Widget>[Text(txt)]),
-                      ),
-                      actions: <Widget>[
-                        TextButton(
-                          child: const Text('OK'),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                );
+              } catch (e) {
+                await showErrorDialog(context, 'Error: ${e.toString()}');
               }
             },
             child: const Text('Register'),
