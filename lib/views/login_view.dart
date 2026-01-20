@@ -1,8 +1,11 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
 
 import 'package:notefy/constants/routes.dart';
+import 'package:notefy/utilities/show_error_dialog.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -62,32 +65,15 @@ class _LoginViewState extends State<LoginView> {
                   context,
                 ).pushNamedAndRemoveUntil(notesRoute, (route) => false);
               } on FirebaseAuthException catch (e) {
-                String txt = '';
                 if (e.code == 'user-not-found') {
-                  txt = 'User not found';
+                  await showErrorDialog(context, 'User not found');
                 } else if (e.code == 'wrong-password') {
-                  txt = 'Password is wrong';
+                  await showErrorDialog(context, 'Password is wrong');
+                } else{
+                  await showErrorDialog(context, 'Error: ${e.code}');
                 }
-                return showDialog<void>(
-                  context: context,
-                  barrierDismissible: false, // user must tap button!
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text('Something\'s Wrong'),
-                      content: SingleChildScrollView(
-                        child: ListBody(children: <Widget>[Text(txt)]),
-                      ),
-                      actions: <Widget>[
-                        TextButton(
-                          child: const Text('OK'),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                );
+              } catch (e){
+                  await showErrorDialog(context, 'Error: ${e.toString()}');
               }
               // catch(e){ //catches every error
               //   print(e.runtimeType); // type of the exception
