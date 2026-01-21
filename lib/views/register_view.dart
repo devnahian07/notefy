@@ -1,8 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
 
 import 'package:notefy/constants/routes.dart';
+import 'package:notefy/services/auth/auth_exceptions.dart';
+import 'package:notefy/services/auth/auth_service.dart';
 import 'package:notefy/utilities/show_error_dialog.dart';
 
 class RegisterView extends StatefulWidget {
@@ -55,30 +56,26 @@ class _RegisterViewState extends State<RegisterView> {
               final email = _email.text;
               final password = _password.text;
               try {
-                await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                await AuthService.fireBase().createUser(
                   email: email,
                   password: password,
                 );
-                await FirebaseAuth.instance.currentUser?.sendEmailVerification();
+                await AuthService.fireBase().sendEmailVerification();
                 Navigator.of(context).pushNamed(verifyEmailRoute);
-              } on FirebaseAuthException catch (e) {
-                if (e.code == 'unknown') {
-                  await showErrorDialog(
-                    context,
-                    'Your password must be at least 8 characters long, including a number and a special character.',
-                  );
-                } else if (e.code == 'email-already-in-use') {
-                  await showErrorDialog(
-                    context,
-                    'The email address is already in use by another account.',
-                  );
-                } else if (e.code == 'invalid-email') {
-                  await showErrorDialog(context, 'Invalid email address');
-                } else {
-                  await showErrorDialog(context, 'Error: ${e.code}');
-                }
-              } catch (e) {
-                await showErrorDialog(context, 'Error: ${e.toString()}');
+              } on WeakPasswordAuthException {
+                await showErrorDialog(
+                  context,
+                  'Your password must be at least 8 characters long, including a number and a special character.',
+                );
+              } on EmailAlreadyInUseAuthException {
+                await showErrorDialog(
+                  context,
+                  'The email address is already in use by another account.',
+                );
+              } on InvalidEmailAuthException {
+                await showErrorDialog(context, 'Invalid email address');
+              } on GenericAuthException {
+                await showErrorDialog(context, 'Failed to register');
               }
             },
             child: const Text('Register'),
