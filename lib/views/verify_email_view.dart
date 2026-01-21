@@ -19,7 +19,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
       body: Column(
         children: [
           const Text(
-            'We\'ve already sent you an email. Open it to veriy your account.',
+            'We\'ve already sent you an email. Open it to verify your account.',
           ),
           const Text(
             'If you haven\'t received the email, then press the button below:',
