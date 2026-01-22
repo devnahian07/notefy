@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:notefy/constants/routes.dart'; 
+import 'package:notefy/constants/routes.dart';
 import 'package:notefy/services/auth/auth_service.dart';
 import 'package:notefy/views/login_view.dart';
-import 'package:notefy/views/notes_view.dart';
+import 'package:notefy/views/notes/new_note_view.dart';
+import 'package:notefy/views/notes/notes_view.dart';
 import 'package:notefy/views/register_view.dart';
 import 'package:notefy/views/verify_email_view.dart';
-import 'dart:developer' as devtools show log;
 
 void main() {
   runApp(
@@ -19,6 +19,7 @@ void main() {
         registerRoute: (context) => const RegisterView(),
         notesRoute: (context) => const NotesView(),
         verifyEmailRoute: (context) => const VerifyEmailView(),
+        newNoteRoute: (context) => const NewNoteView(),
       },
     ),
   );
@@ -36,7 +37,6 @@ class HomePage extends StatelessWidget {
         switch (snapshot.connectionState) {
           case ConnectionState.done:
             final user = AuthService.fireBase().currentUser;
-            devtools.log(user.toString());
             if (user != null) {
               if (user.isEmailVerified) {
                 return const NotesView();
