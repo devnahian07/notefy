@@ -26,7 +26,7 @@ class CouldNotDeleteNote implements Exception{
 
 }
 
-class CouldNoteFindNote implements Exception{
+class CouldNotFindNote implements Exception{
 
 }
 
