@@ -38,10 +38,16 @@ class NotesService {
   List<DatabaseNote> _notes = [];
 
   static final NotesService _shared = NotesService._sharedInstance();
-  NotesService._sharedInstance();
+  NotesService._sharedInstance(){
+    _notesStreamController = StreamController<List<DatabaseNote>>.broadcast(
+      onListen: () {
+        _notesStreamController.sink.add(_notes);
+      },
+    );
+  }
   factory NotesService() => _shared;
 
-  final _notesStreamController = StreamController<List<DatabaseNote>>.broadcast(); // everything from the UI will be accessed through this stream
+  late final StreamController<List<DatabaseNote>> _notesStreamController; // everything from the UI will be accessed through this stream
 
   Stream<List<DatabaseNote>> get allNotes => _notesStreamController.stream;
 
@@ -159,7 +165,7 @@ class NotesService {
 
     // create note
     final noteId = await db.insert(noteTable, {
-      idColumn: owner.id,
+      userIdColumn: owner.id,
       textColumn: text,
       isSyncedWithCloudColumn: 1
     });

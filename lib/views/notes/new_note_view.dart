@@ -35,7 +35,7 @@ class _NewNoteViewState extends State<NewNoteView> {
     _textController.addListener(_textControllerListener);
   }
 
-  Future<DatabaseNote> createOrGetExistingNote() async {
+  Future<DatabaseNote> createNewNote() async {
     final existingNote = _note;
     if (existingNote != null) {
       return existingNote;
@@ -43,12 +43,8 @@ class _NewNoteViewState extends State<NewNoteView> {
     final currentUser = AuthService.fireBase().currentUser!;
     final email = currentUser.email!;
     final owner = await _notesService.getUser(email: email);
-    final newNote = await _notesService.createNote(owner: owner);
 
-    _note = newNote;
-    _setupTextControllerListener();
-
-    return newNote;
+    return await _notesService.createNote(owner: owner);
   }
 
   void _deleteNoteIfTextIsEmpty() {
@@ -80,10 +76,12 @@ class _NewNoteViewState extends State<NewNoteView> {
     return Scaffold(
       appBar: AppBar(title: const Text('New Note')),
       body: FutureBuilder(
-        future: createOrGetExistingNote(),
+        future: createNewNote(),
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.done:
+              _note = snapshot.data as DatabaseNote;
+              _setupTextControllerListener();
               return TextField(
                 controller:
                     _textController, // text field tells the controller if it was modified
