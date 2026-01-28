@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:developer' as devtools show log;
 
 import 'package:notefy/constants/routes.dart';
 import 'package:notefy/services/auth/auth_service.dart';
