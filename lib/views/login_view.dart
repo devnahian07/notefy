@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:notefy/constants/routes.dart';
 import 'package:notefy/services/auth/auth_exceptions.dart';
 import 'package:notefy/services/auth/bloc/auth_bloc.dart';
 import 'package:notefy/services/auth/bloc/auth_event.dart';
 import 'package:notefy/services/auth/bloc/auth_state.dart';
 import 'package:notefy/utilities/dialogs/error_dialog.dart';
-import 'package:notefy/utilities/dialogs/loading_dialog.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -18,7 +16,6 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   late final TextEditingController _email;
   late final TextEditingController _password;
-  CloseDialog? _closeDialogHandle;
 
   @override
   void initState() {
@@ -40,14 +37,6 @@ class _LoginViewState extends State<LoginView> {
       listener: (context, state) async {
         if (state is AuthStateLoggedOut) {
           final exc = state.exception;
-          final closeDialog = _closeDialogHandle;
-          if(!state.isLoading && closeDialog != null){
-            closeDialog();
-            _closeDialogHandle = null;
-          }
-          else if(state.isLoading && closeDialog == null){
-            _closeDialogHandle = showLoadingDialog(context: context, text: 'Loading');
-          }
           if (exc is UserNotFoundAuthException ||
               exc is WrongPasswordAuthException) {
             await showErrorDialog(context, 'Wrong credentials');

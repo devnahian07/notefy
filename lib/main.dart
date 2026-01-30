@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notefy/constants/routes.dart';
+import 'package:notefy/helpers/loading/loading_screen.dart';
 import 'package:notefy/services/auth/bloc/auth_bloc.dart';
 import 'package:notefy/services/auth/bloc/auth_event.dart';
 import 'package:notefy/services/auth/bloc/auth_state.dart';
@@ -37,25 +38,32 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     context.read<AuthBloc>().add(const AuthEventInitialize());
 
-    return BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
-      if(state is AuthStateLoggedIn){
-        return NotesView();
-      }
-      else if(state is AuthStateNeedsVerification){
-        return VerifyEmailView();
-      }
-      else if(state is AuthStateLoggedOut){
-        return LoginView();
-      }
-      else if(state is AuthStateRegistering){
-        return RegisterView();
-      }
-      else{
-        return const Scaffold(
-          body: CircularProgressIndicator(),
-        );
-      }
-    });
+    return BlocConsumer<AuthBloc, AuthState>(
+      // when we need both bloc builder and bloc listener
+      listener: (context, state) {
+        if (state.isLoading) {
+          LoadingScreen().show(
+            context: context,
+            text: state.loadingText ?? 'Pleas wait a moment',
+          );
+        } else {
+          LoadingScreen().hide();
+        }
+      },
+      builder: (context, state) {
+        if (state is AuthStateLoggedIn) {
+          return NotesView();
+        } else if (state is AuthStateNeedsVerification) {
+          return VerifyEmailView();
+        } else if (state is AuthStateLoggedOut) {
+          return LoginView();
+        } else if (state is AuthStateRegistering) {
+          return RegisterView();
+        } else {
+          return const Scaffold(body: CircularProgressIndicator());
+        }
+      },
+    );
   }
 }
 
