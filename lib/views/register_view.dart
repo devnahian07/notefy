@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:notefy/constants/routes.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notefy/services/auth/auth_exceptions.dart';
-import 'package:notefy/services/auth/auth_service.dart';
+import 'package:notefy/services/auth/bloc/auth_bloc.dart';
+import 'package:notefy/services/auth/bloc/auth_event.dart';
+import 'package:notefy/services/auth/bloc/auth_state.dart';
 import 'package:notefy/utilities/dialogs/error_dialog.dart';
 
 class RegisterView extends StatefulWidget {
@@ -31,62 +33,65 @@ class _RegisterViewState extends State<RegisterView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Register')),
-      body: Column(
-        children: [
-          TextField(
-            controller: _email,
-            enableSuggestions: false,
-            autocorrect: false,
-            keyboardType: TextInputType.emailAddress,
-            decoration: const InputDecoration(hintText: 'Enter your email'),
-          ),
-          TextField(
-            controller: _password,
-            obscureText: true,
-            enableSuggestions: false,
-            autocorrect: false,
-            decoration: const InputDecoration(hintText: 'Enter your password'),
-          ),
-          TextButton(
-            onPressed: () async {
-              final email = _email.text;
-              final password = _password.text;
-              try {
-                await AuthService.fireBase().createUser(
-                  email: email,
-                  password: password,
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) async {
+        if (state is AuthStateRegistering) {
+          final exc = state.exception;
+          if (exc is WeakPasswordAuthException) {
+            await showErrorDialog(
+              context,
+              'Your password must be at least 8 characters long, including a number and a special character.',
+            );
+          } else if (exc is EmailAlreadyInUseAuthException) {
+            await showErrorDialog(
+              context,
+              'The email address is already in use by another account.',
+            );
+          } else if (exc is InvalidEmailAuthException) {
+            await showErrorDialog(context, 'Invalid email address');
+          } else if (exc is GenericAuthException) {
+            await showErrorDialog(context, 'Failed to register');
+          }
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Register')),
+        body: Column(
+          children: [
+            TextField(
+              controller: _email,
+              enableSuggestions: false,
+              autocorrect: false,
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(hintText: 'Enter your email'),
+            ),
+            TextField(
+              controller: _password,
+              obscureText: true,
+              enableSuggestions: false,
+              autocorrect: false,
+              decoration: const InputDecoration(
+                hintText: 'Enter your password',
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                final email = _email.text;
+                final password = _password.text;
+                context.read<AuthBloc>().add(
+                  AuthEventRegister(email, password),
                 );
-                await AuthService.fireBase().sendEmailVerification();
-                Navigator.of(context).pushNamed(verifyEmailRoute);
-              } on WeakPasswordAuthException {
-                await showErrorDialog(
-                  context,
-                  'Your password must be at least 8 characters long, including a number and a special character.',
-                );
-              } on EmailAlreadyInUseAuthException {
-                await showErrorDialog(
-                  context,
-                  'The email address is already in use by another account.',
-                );
-              } on InvalidEmailAuthException {
-                await showErrorDialog(context, 'Invalid email address');
-              } on GenericAuthException {
-                await showErrorDialog(context, 'Failed to register');
-              }
-            },
-            child: const Text('Register'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(
-                context,
-              ).pushNamedAndRemoveUntil(loginRoute, (route) => false);
-            },
-            child: const Text('Already Registered? Login Here!'),
-          ),
-        ],
+              },
+              child: const Text('Register'),
+            ),
+            TextButton(
+              onPressed: () {
+                context.read<AuthBloc>().add(const AuthEventLogOut());
+              },
+              child: const Text('Already Registered? Login Here!'),
+            ),
+          ],
+        ),
       ),
     );
   }
