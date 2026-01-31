@@ -16,15 +16,13 @@ class AuthEventSendEmailVerification extends AuthEvent{
 class AuthEventLogIn extends AuthEvent{
   final String email;
   final String password;
-
   const AuthEventLogIn(this.email, this.password);
 }
 
 class AuthEventRegister extends AuthEvent{
   final String email;
   final String password;
-
-  AuthEventRegister(this.email, this.password);
+  const AuthEventRegister(this.email, this.password);
 }
 
 class AuthEventShouldRegister extends AuthEvent{
@@ -33,4 +31,9 @@ class AuthEventShouldRegister extends AuthEvent{
 
 class AuthEventLogOut extends AuthEvent{
   const AuthEventLogOut();
+}
+
+class AuthEventForgotPassword extends AuthEvent{
+  final String? email;
+  const AuthEventForgotPassword({required this.email});
 }

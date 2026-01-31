@@ -19,13 +19,17 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
         children: [
           const Text(
             'We\'ve already sent you an email. Open it to verify your account.',
+            style: TextStyle(fontSize: 15),
           ),
           const Text(
             'If you haven\'t received the email, then press the button below:',
+            style: TextStyle(fontSize: 15),
           ),
           TextButton(
-            onPressed: (){
-              context.read<AuthBloc>().add(const AuthEventSendEmailVerification());
+            onPressed: () {
+              context.read<AuthBloc>().add(
+                const AuthEventSendEmailVerification(),
+              );
             },
             child: const Text('Send Verification Email'),
           ),
