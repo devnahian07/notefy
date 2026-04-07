@@ -18,13 +18,17 @@ A cross-platform note-taking application built with Flutter and Firebase. Create
 
 <p align="center">
   <img src="screenshots/01_login.jpg" width="200" alt="Login Screen"/>
+  <br>
   <img src="screenshots/02_register.jpg" width="200" alt="Register Screen"/>
+  <br>
   <img src="screenshots/03_forgot_password.jpg" width="200" alt="Forgot Password"/>
 </p>
 
 <p align="center">
   <img src="screenshots/04_notes_list.jpg" width="200" alt="Notes List"/>
+  <br>
   <img src="screenshots/05_note_editor.jpg" width="200" alt="Note Editor"/>
+  <br>
   <img src="screenshots/06_logout_dialog.jpg" width="200" alt="Logout Dialog"/>
 </p>
 
